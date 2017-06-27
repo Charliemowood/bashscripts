@@ -1,29 +1,32 @@
 #!/bin/bash
 
+project_name=$1
+description="An app brought to you with the kickoff scaffolder"
 
 #------------------------------------------
 # CREATE FOLDER AND INITIAL FILES
 
 # create project folder and jump into it
-mkdir $1
-cd $1
+mkdir $project_name
+cd $project_name
 
 # fill the folder with all necessary start files
-touch server.js
-touch webpack.config.js
-touch package.json
-mkdir client
-
-mkdir client/build
-touch client/build/index.html
-
-mkdir client/src
-mkdir client/src/models
-mkdir client/src/models/specs
+mkdir db
+mkdir controllers
+mkdir -p client/build
+mkdir -p client/src/models/specs
 mkdir client/src/views
+
+touch README.md
+touch server.js
+touch package.json
+touch client/webpack.config.js
+touch client/build/index.html
+touch client/build/style.css
+touch client/src/views/ui.js
 touch client/src/app.js
-
-
+touch controllers/index.js
+touch db/seeds.js
 
 
 #------------------------------------------
@@ -33,24 +36,46 @@ touch client/src/app.js
 cat << EOF > server.js
 var express = require('express');
 var app = express();
+var bodyParser = require('body-parser');
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('client/build'));
-
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/client/build/index.html');
-});
+app.use(require('./controllers/index.js'));
 
 var server = app.listen(3000, function () {
-  console.log('Server running on port: ' + server.address().port);
+  console.log('$project_name app running on: ' + server.address().port);
 });
 EOF
 
+# fill seeds.js
+cat << EOF > db/seeds.js
+use $project_name;
+EOF
+
+# fill index.js
+cat << EOF > controllers/index.js
+var express = require('express');
+var router = express.Router();
+var path = require('path');
+
+router.get('/', function (req, res) {
+  res.sendFile(path.join(__dirname, '../client/build/index.html'));
+});
+
+router.get('/about', function(req, res){
+  res.json({data: "All about us!"});
+})
+
+module.exports = router;
+EOF
+
 # fill webpack.config.js
-cat << EOF > webpack.config.js
+cat << EOF > client/webpack.config.js
 var config = {
-  entry: __dirname + "/client/src/app.js",
+  entry: __dirname + "/src/app.js",
   output: {
-    path: __dirname + "/client/build",
+    path: __dirname + "/build",
     filename: "bundle.js"
   },
   devtool: 'source-map'
@@ -65,39 +90,61 @@ cat << EOF > client/build/index.html
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title>$project_name</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="bundle.js"></script>
 </head>
 <body>
-	
+	<h1>$project_name</h1>
+  <p>Started with kickoff</p>
 </body>
 </html>
 EOF
 
 # fill app.js
 cat << EOF > client/src/app.js
+var UI = require('./views/ui');
+
 var app = function(){
-  
+  new UI();
 }
 
 window.addEventListener('load', app);
 EOF
 
+# fill ui.js
+cat << EOF > client/src/views/ui.js
+var UI = function() {
+
+}
+
+UI.prototype = {
+
+}
+
+module.exports = UI;
+EOF
+
 # fill package.json
 cat << EOF > package.json
 {
-  "name": "project",
+  "name": "$project_name",
   "version": "1.0.0",
-  "description": "",
+  "description": "$description",
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-    "build": "webpack -w",
-    "test": "mocha client/src/models/specs"
+    "build": "cd client && webpack",
+    "watch": "cd client && webpack -w",
+    "test": "mocha client/src/models/specs",
+    "seed": "mongo < db/seeds.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.15.3"
+    "express": "^4.15.3",
+    "mongodb": "^2.2.29",
+    "body-parser": "^1.15.2"
   },
   "devDependencies": {
     "mocha": "^3.4.2",
@@ -113,19 +160,7 @@ EOF
 # INSTALL DEPENDENCIES
 
 npm i
-
-
-
-
-
-
-
-
-
-
-
-
-
+npm run build
 
 
 
