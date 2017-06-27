@@ -17,6 +17,7 @@ mkdir -p client/build
 mkdir -p client/src/models/specs
 mkdir client/src/views
 
+touch .gitignore
 touch README.md
 touch server.js
 touch package.json
@@ -31,6 +32,15 @@ touch db/seeds.js
 
 #------------------------------------------
 # CREATE BOILERPLATE CODE
+
+
+# fill .gititgnore
+cat << EOF > .gitignore
+node_modules
+npm-debug.log
+client/build/bundle.js
+client/build/bundle.js.map
+EOF
 
 # fill server.js
 cat << EOF > server.js
