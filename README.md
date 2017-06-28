@@ -1,17 +1,25 @@
 This bash script is for creating all the initial files and boilerplate and installing dependencies using webpack and mongoDB. 
 
 1. Clone this repository:
-`git clone git@github.com:eoghanscrowley/bashscripts.git`
+```bash
+git clone git@github.com:eoghanscrowley/bashscripts.git
+```
 
 2. Change directory into this repository. 
-`cd bashscripts`
+```bash
+cd bashscripts
+```
 
 3. Change the permissions on the file to make it executable. 
-`chmod u+e kickoff`
+```bash
+chmod u+e kickoff
+```
 
 4. Put `alias kickoff="~/path/to/kickoff"` in your .zshrc/.bashrc file
 
 5. To run the script, use the command: 
-`kickoff <project-name>` 
+```bash
+kickoff <project-name>
+``` 
 
 > Make sure you provide an argument for kickoff. 
